@@ -1,0 +1,7 @@
+FROM registry.redhat.io/ansible-automation-platform-25/ee-minimal-rhel9:latest
+
+RUN pip3 install 'ansible[azure]'
+
+RUN ansible-galaxy collection install azure.azcollection
+
+RUN pip3 install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
