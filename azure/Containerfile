@@ -4,4 +4,6 @@ RUN pip3 install 'ansible[azure]'
 
 RUN ansible-galaxy collection install azure.azcollection
 
-RUN pip3 install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
+COPY requirements.txt /requirements.txt
+
+RUN pip3 install -r /requirements.txt
