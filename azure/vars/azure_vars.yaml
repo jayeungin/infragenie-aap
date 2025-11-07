@@ -1,4 +1,4 @@
 ---
-vm_name = 'myInfragenieVM'
-resource_group = 'myInfragenieResourceGroup'
-rnum = 12345  # Random number to ensure unique resource names
+vm_name : 'InfragenieVM'
+resource_group : 'InfragenieResourceGroup'
+rnum : 12345  # Random number to ensure unique resource names
