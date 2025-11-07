@@ -1,0 +1,4 @@
+---
+vm_name = 'myInfragenieVM'
+resource_group = 'myInfragenieResourceGroup'
+rnum = 12345  # Random number to ensure unique resource names

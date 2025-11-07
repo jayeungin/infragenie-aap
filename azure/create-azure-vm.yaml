@@ -1,63 +1,76 @@
 - name: Create Azure VM
   hosts: localhost
+  collections: 
+    - azure.azcollection  
   connection: local
+  vars_files:
+    - vars/azure_vars.yaml
+
+
   tasks:
-  - name: Create resource group
-    azure_rm_resourcegroup:
-      name: infragenie-demo-rg
-      location: eastus
-  - name: Create virtual network
-    azure_rm_virtualnetwork:
-      resource_group: infragenie-demo-rg
-      name: infragenieVnet
-      address_prefixes: "10.0.0.0/16"
-  - name: Add subnet
-    azure_rm_subnet:
-      resource_group: infragenie-demo-rg
-      name: infragenieSubnet
-      address_prefix: "10.0.1.0/24"
-      virtual_network: infragenieVnet
-  - name: Create public IP address
-    azure_rm_publicipaddress:
-      resource_group: infragenie-demo-rg
-      allocation_method: Static
-      name: infrageniePublicIP
-    register: output_ip_address
-  - name: Public IP of VM
-    debug:
-      msg: "The public IP is {{ output_ip_address.state.ip_address }}."
-  - name: Create Network Security Group that allows SSH
-    azure_rm_securitygroup:
-      resource_group: infragenie-demo-rg
-      name: infragenieSecurityGroup
-      rules:
-        - name: SSH
-          protocol: Tcp
-          destination_port_range: 22
-          access: Allow
-          priority: 1001
-          direction: Inbound
-  - name: Create virtual network interface card
-    azure_rm_networkinterface:
-      resource_group: infragenie-demo-rg
-      name: infragenieNIC
-      virtual_network: infragenieVnet
-      subnet: infragenieSubnet
-      public_ip_name: infrageniePublicIP
-      security_group: infragenieSecurityGroup
-  - name: Create VM
-    azure_rm_virtualmachine:
-      resource_group: infragenie-demo-rg
-      name: infragenieVM
-      vm_size: Standard_DS1_v2
-      admin_username: azureuser
-      ssh_password_enabled: false
-      ssh_public_keys:
-        - path: /home/azureuser/.ssh/authorized_keys
-          key_data: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIH37jzejqDQ0WV3wOGv3lT8OsZ1G3cm+eo6K8hlGdjCl jason@Jasons-MacBook-Air.local"
-      network_interfaces: infragenieNIC
-      image:
-        offer: RHEL
-        publisher: RedHat
-        sku: 10-lvm-gen2
-        version: latest
+    - name: Create resource group
+      azure_rm_resourcegroup:
+        name: '{{ resource_group }}'
+        location: eastus
+
+    - name: Create virtual network
+      azure_rm_virtualnetwork:
+        resource_group: '{{ resource_group }}'
+        name: "{{ vm_name }}-infragenie-vnet"
+        address_prefixes: "10.0.0.0/16"
+
+    - name: Add subnet
+      azure_rm_subnet:
+        resource_group: '{{ resource_group }}'
+        name: "{{ vm_name }}-infragenie-subnet"
+        address_prefix: "10.0.1.0/24"
+        virtual_network: "{{ vm_name }}-infragenie-vnet"
+
+    - name: Create public IP address
+      azure_rm_publicipaddress:
+        resource_group: '{{ resource_group }}'
+        allocation_method: Static
+        name: "{{ vm_name }}-infragenie-pip-{{ rnum }}"
+      register: output_ip_address
+
+    - name: Public IP of VM
+      debug:
+        msg: "The public IP is {{ output_ip_address.state.ip_address }}."
+
+    - name: Create Network Security Group that allows SSH
+      azure_rm_securitygroup:
+        resource_group: '{{ resource_group }}'
+        name: "{{ vm_name }}-infragenie-sg"
+        rules:
+          - name: SSH
+            protocol: Tcp
+            destination_port_range: 22
+            access: Allow
+            priority: 1001
+            direction: Inbound
+
+    - name: Create virtual network interface card
+      azure_rm_networkinterface:
+        resource_group: '{{ resource_group }}'
+        name: "{{ vm_name }}-infragenie-vnic"
+        virtual_network: "{{ vm_name }}-infragenie-vnet"
+        subnet: "{{ vm_name }}-infragenie-subnet"
+        public_ip_name: "{{ vm_name }}-infragenie-pip-{{ rnum }}"
+        security_group: "{{ vm_name }}-infragenie-sg"
+
+    - name: Create VM
+      azure_rm_virtualmachine:
+        resource_group: '{{ resource_group }}'
+        name: '{{ vm_name }}'
+        vm_size: Standard_DS1_v2
+        admin_username: shadowman
+        ssh_password_enabled: false
+        ssh_public_keys:
+          - path: /home/shadowman/.ssh/authorized_keys
+            key_data: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}" 
+        network_interfaces: "{{ vm_name }}-infragenie-vnic"
+        image:
+          offer: RHEL
+          publisher: RedHat
+          sku: 10-lvm-gen2
+          version: latest
