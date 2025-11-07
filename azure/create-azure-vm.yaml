@@ -20,6 +20,8 @@
         resource_group: '{{ resource_group }}'
         name: "{{ vm_name }}-vnet"
         address_prefixes: "10.0.0.0/16"
+        tags:
+          owner: '{{ owner }}'
 
     - name: Add subnet
       azure_rm_subnet:
@@ -27,12 +29,14 @@
         name: "{{ vm_name }}-subnet"
         address_prefix: "10.0.1.0/24"
         virtual_network: "{{ vm_name }}-vnet"
+        # tags: does not support tags 
 
     - name: Create public IP address
       azure_rm_publicipaddress:
         resource_group: '{{ resource_group }}'
         allocation_method: Static
         name: "{{ vm_name }}-pip-{{ rnum }}"
+        # tags: does not support tags 
       register: output_ip_address
 
     - name: Public IP of VM
@@ -50,6 +54,8 @@
             access: Allow
             priority: 1001
             direction: Inbound
+        tags:
+          owner: '{{ owner }}'
 
     - name: Create virtual network interface card
       azure_rm_networkinterface:
@@ -59,6 +65,8 @@
         subnet: "{{ vm_name }}-subnet"
         public_ip_name: "{{ vm_name }}-pip-{{ rnum }}"
         security_group: "{{ vm_name }}-sg"
+        tags:
+          owner: '{{ owner }}'
 
     - name: Create VM
       azure_rm_virtualmachine:
@@ -74,3 +82,5 @@
           publisher: RedHat
           sku: 10-lvm-gen2
           version: latest
+        tags:
+          owner: '{{ owner }}'
