@@ -36,8 +36,7 @@
         resource_group: '{{ resource_group }}'
         allocation_method: Static
         name: "{{ vm_name }}-infragenie-pip-{{ rnum }}"
-        tags:
-          owner: '{{ owner }}'
+        # tags: does not support tags 
       register: output_ip_address
 
     - name: Public IP of VM
