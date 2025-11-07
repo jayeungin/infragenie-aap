@@ -65,8 +65,7 @@
         subnet: "{{ vm_name }}-infragenie-subnet"
         public_ip_name: "{{ vm_name }}-infragenie-pip-{{ rnum }}"
         security_group: "{{ vm_name }}-infragenie-sg"
-        tags:
-          owner: '{{ owner }}'
+        # tags: does not support tags 
 
     - name: Create VM
       azure_rm_virtualmachine:
