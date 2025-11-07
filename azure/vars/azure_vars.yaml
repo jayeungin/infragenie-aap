@@ -1,4 +1,7 @@
 ---
-vm_name : 'InfragenieVM'
-resource_group : 'InfragenieResourceGroup'
-rnum : 12345  # Random number to ensure unique resource names
+vm_name: 'InfragenieVM'
+resource_group: 'InfragenieResourceGroup'
+rnum: 12345  # Random number to ensure unique resource names
+admin_username: 'shadowman'
+admin_password: 'PresidioR0cks1!'
+owner: 'infragenie-team'

@@ -12,12 +12,16 @@
       azure_rm_resourcegroup:
         name: '{{ resource_group }}'
         location: eastus
+        tags:
+          owner: '{{ owner }}'
 
     - name: Create virtual network
       azure_rm_virtualnetwork:
         resource_group: '{{ resource_group }}'
         name: "{{ vm_name }}-infragenie-vnet"
         address_prefixes: "10.0.0.0/16"
+        tags:
+          owner: '{{ owner }}'
 
     - name: Add subnet
       azure_rm_subnet:
@@ -25,12 +29,16 @@
         name: "{{ vm_name }}-infragenie-subnet"
         address_prefix: "10.0.1.0/24"
         virtual_network: "{{ vm_name }}-infragenie-vnet"
+        tags:
+          owner: '{{ owner }}'
 
     - name: Create public IP address
       azure_rm_publicipaddress:
         resource_group: '{{ resource_group }}'
         allocation_method: Static
         name: "{{ vm_name }}-infragenie-pip-{{ rnum }}"
+        tags:
+          owner: '{{ owner }}'
       register: output_ip_address
 
     - name: Public IP of VM
@@ -48,6 +56,8 @@
             access: Allow
             priority: 1001
             direction: Inbound
+        tags:
+          owner: '{{ owner }}'
 
     - name: Create virtual network interface card
       azure_rm_networkinterface:
@@ -57,6 +67,8 @@
         subnet: "{{ vm_name }}-infragenie-subnet"
         public_ip_name: "{{ vm_name }}-infragenie-pip-{{ rnum }}"
         security_group: "{{ vm_name }}-infragenie-sg"
+        tags:
+          owner: '{{ owner }}'
 
     - name: Create VM
       azure_rm_virtualmachine:
@@ -72,3 +84,5 @@
           publisher: RedHat
           sku: 10-lvm-gen2
           version: latest
+        tags:
+          owner: '{{ owner }}'
