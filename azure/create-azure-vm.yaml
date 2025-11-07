@@ -18,7 +18,7 @@
     - name: Create virtual network
       azure_rm_virtualnetwork:
         resource_group: '{{ resource_group }}'
-        name: "{{ vm_name }}-vnet"
+        name: '{{ vm_name }}-vnet'
         address_prefixes: "10.0.0.0/16"
         tags:
           owner: '{{ owner }}'
@@ -26,16 +26,16 @@
     - name: Add subnet
       azure_rm_subnet:
         resource_group: '{{ resource_group }}'
-        name: "{{ vm_name }}-subnet"
+        name: '{{ vm_name }}-subnet'
         address_prefix: "10.0.1.0/24"
-        virtual_network: "{{ vm_name }}-vnet"
+        virtual_network: '{{ vm_name }}-vnet'
         # tags: does not support tags 
 
     - name: Create public IP address
       azure_rm_publicipaddress:
         resource_group: '{{ resource_group }}'
         allocation_method: Static
-        name: "{{ vm_name }}-pip-{{ rnum }}"
+        name: '{{ vm_name }}-pip-{{ rnum }}'
         tags:
           owner: '{{ owner }}'
       register: output_ip_address
@@ -47,7 +47,7 @@
     - name: Create Network Security Group that allows SSH
       azure_rm_securitygroup:
         resource_group: '{{ resource_group }}'
-        name: "{{ vm_name }}-sg"
+        name: '{{ vm_name }}-sg'
         rules:
           - name: SSH
             protocol: Tcp
@@ -61,13 +61,16 @@
     - name: Create virtual network interface card
       azure_rm_networkinterface:
         resource_group: '{{ resource_group }}'
-        name: "{{ vm_name }}-vnic"
-        virtual_network: "{{ vm_name }}-vnet"
-        subnet: "{{ vm_name }}-subnet"
-        public_ip_name: "{{ vm_name }}-pip-{{ rnum }}"
-        security_group: "{{ vm_name }}-sg"
-        # tags:
-          # owner: '{{ owner }}'
+        name: '{{ vm_name }}-vnic'
+        virtual_network: '{{ vm_name }}-vnet'
+        subnet: '{{ vm_name }}-subnet'
+        security_group: '{{ vm_name }}-sg'
+        ip_configurations:
+          - name: '{{ vm_name }}-ipconfig1'
+            public_ip_address_name: '{{ vm_name }}-pip-{{ rnum }}'
+            primary: true
+        tags:
+          owner: '{{ owner }}'
 
     - name: Create VM
       azure_rm_virtualmachine:
@@ -77,7 +80,7 @@
         admin_username: '{{ admin_username }}'
         admin_password: '{{ admin_password }}'
         ssh_password_enabled: true
-        network_interfaces: "{{ vm_name }}-vnic"
+        network_interfaces: '{{ vm_name }}-vnic'
         image:
           offer: RHEL
           publisher: RedHat
