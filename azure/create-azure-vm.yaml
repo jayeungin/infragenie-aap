@@ -63,11 +63,9 @@
         resource_group: '{{ resource_group }}'
         name: '{{ vm_name }}'
         vm_size: Standard_DS1_v2
-        admin_username: shadowman
-        ssh_password_enabled: false
-        ssh_public_keys:
-          - path: /home/shadowman/.ssh/authorized_keys
-            key_data: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}" 
+        admin_username: '{{ admin_username }}'
+        admin_password: '{{ admin_password }}'
+        ssh_password_enabled: true
         network_interfaces: "{{ vm_name }}-infragenie-vnic"
         image:
           offer: RHEL
