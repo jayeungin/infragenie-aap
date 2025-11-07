@@ -29,8 +29,6 @@
         name: "{{ vm_name }}-infragenie-subnet"
         address_prefix: "10.0.1.0/24"
         virtual_network: "{{ vm_name }}-infragenie-vnet"
-        tags:
-          owner: '{{ owner }}'
 
     - name: Create public IP address
       azure_rm_publicipaddress:
