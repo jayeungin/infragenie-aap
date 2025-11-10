@@ -11,7 +11,7 @@
     - name: Create resource group
       azure_rm_resourcegroup:
         name: '{{ resource_group }}'
-        location: eastus
+        location: '{{ region }}'' 
         tags:
           owner: '{{ owner }}'
 
